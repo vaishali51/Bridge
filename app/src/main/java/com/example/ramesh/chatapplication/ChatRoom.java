@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -114,6 +115,16 @@ public class ChatRoom extends AppCompatActivity {
                 String email = model.getMessageUser();
                 if (!(FirebaseAuth.getInstance().getCurrentUser() != null && FirebaseAuth.getInstance().getCurrentUser().getEmail().toString().equals(email))) {
                     chtbx.setBackground(getResources().getDrawable(R.drawable.chtbox_2));
+                    chtbx.setGravity(Gravity.END);
+                } else {
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)chtbx.getLayoutParams();
+                    params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    chtbx.setLayoutParams(params);
+
+                    RelativeLayout.LayoutParams params2 = (RelativeLayout.LayoutParams)messageUser.getLayoutParams();
+                    params2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+                    params2.setMarginEnd(25);
+                    messageUser.setLayoutParams(params2);
                 }
 
                 //set values
