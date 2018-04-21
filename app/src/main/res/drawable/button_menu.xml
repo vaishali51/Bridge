@@ -4,6 +4,6 @@
     <item android:state_pressed="true"
         android:drawable="@color/cardview_dark_background"></item>
 
-    <item android:drawable="@color/authui_colorAccent"></item>
+    <item android:drawable="@color/salmon"></item>
 
 </selector>
