@@ -193,6 +193,12 @@ public class ChatRoom extends AppCompatActivity {
             } else {
                 Toast.makeText(ChatRoom.this, "We couldn't sign you in..", Toast.LENGTH_SHORT).show();
                 //finish();
+                startActivityForResult(AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setLogo(R.mipmap.logo)
+                        .setTheme(R.style.LoginTheme)
+                        .build(), 10
+                );
             }
         }
         if(requestCode==2){
@@ -215,7 +221,13 @@ public class ChatRoom extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(ChatRoom.this, "Signed out", Toast.LENGTH_SHORT).show();
-                            finish();
+                            //finish();
+                            startActivityForResult(AuthUI.getInstance()
+                                    .createSignInIntentBuilder()
+                                    .setLogo(R.mipmap.logo)
+                                    .setTheme(R.style.LoginTheme)
+                                    .build(), 10
+                            );
                         }
                     });
         }
