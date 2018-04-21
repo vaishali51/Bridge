@@ -47,6 +47,7 @@ import com.android.volley.toolbox.Volley;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 
 /**
@@ -58,6 +59,7 @@ public class ChatRoom extends AppCompatActivity {
     private FirebaseListAdapter<ChatMessage> adapter;
     SharedPreferences sharedPreferences;
     public RelativeLayout chtbx;
+    String Target;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,10 +112,8 @@ public class ChatRoom extends AppCompatActivity {
                 TextView messageUser = (TextView) v.findViewById(R.id.message_user);
 
                 String email = model.getMessageUser();
-                if (FirebaseAuth.getInstance().getCurrentUser() !=null && FirebaseAuth.getInstance().getCurrentUser().getEmail().toString().equals(email)) {
+                if (!(FirebaseAuth.getInstance().getCurrentUser() != null && FirebaseAuth.getInstance().getCurrentUser().getEmail().toString().equals(email))) {
                     chtbx.setBackground(getResources().getDrawable(R.drawable.chtbox_2));
-                } else {
-
                 }
 
                 //set values
@@ -125,11 +125,23 @@ public class ChatRoom extends AppCompatActivity {
                 //Format the time before showing it
                 //messageTime.setText(model.getMessageTime(), DateFormat.format("dd-MM-yyyy(HH:mm:ss)"));
                 String API_KEY = "trnsl.1.1.20180421T080208Z.a562b322b8b83091.82550c2bbb57afa2ac0b5442374a359774762fea";
-                String defaultUrl="https://translate.yandex.net/api/v1.5/tr.json/translate";
+                String defaultUrl = "https://translate.yandex.net/api/v1.5/tr.json/translate";
 
-                String language = getSharedPreferences("MyPrefs",MODE_PRIVATE).getString("language", "en");
-                String stringUrl=defaultUrl+"?key="+API_KEY+"&text="+model.getMessageText()+"&lang="+findLangCode(language.toUpperCase());
+                String language = getSharedPreferences("MyPrefs", MODE_PRIVATE).getString("language", "en");
+                Target=findLangCode(language.toUpperCase());
+                String stringUrl = defaultUrl + "?key=" + API_KEY + "&text=" + model.getMessageText() + "&lang=" + Target;
+                Log.d("tj", "Target: " + Target);
 
+                if(Objects.equals(Target, "ho")){
+                    StringBuilder OutputString= new StringBuilder();
+                    StringTokenizer st = new StringTokenizer(model.getMessageText(), " ");
+                    int count = st.countTokens();
+                    for(int i=0;i<(count/3)+1;i++)
+                        OutputString.append("Hodor ");
+                    messageText.setText(OutputString.toString());
+                }
+
+                else{
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, stringUrl,
                         new Response.Listener<String>() {
                             @Override
@@ -164,6 +176,7 @@ public class ChatRoom extends AppCompatActivity {
                 RequestQueue requestQueue = Volley.newRequestQueue(ChatRoom.this);
                 //adding the string request to request queue
                 requestQueue.add(stringRequest);
+            }
 
             }
         };
@@ -179,7 +192,7 @@ public class ChatRoom extends AppCompatActivity {
                 displayChatMessages();
             } else {
                 Toast.makeText(ChatRoom.this, "We couldn't sign you in..", Toast.LENGTH_SHORT).show();
-                finish();
+                //finish();
             }
         }
         if(requestCode==2){
@@ -314,6 +327,9 @@ public class ChatRoom extends AppCompatActivity {
         if(Objects.equals(lang, "HINDI")){
             langShort="hi";
         }
+        if(Objects.equals(lang, "HODOR")){
+            langShort="ho";
+        }
         if(Objects.equals(lang, "HUNGARIAN")){
             langShort="hu";
         }
@@ -381,7 +397,7 @@ public class ChatRoom extends AppCompatActivity {
             langShort="pt";
         }
         if(Objects.equals(lang, "PUNJABI")){
-            langShort="pu";
+            langShort="pa";
         }
         if(Objects.equals(lang, "ROMANIAN")){
             langShort="ro";
