@@ -7,4 +7,5 @@
     <color name="orange_500">#FF9800</color>
     <color name="salmon">#FA8072</color>
     <color name="red">#FF0000</color>
+    <color name="salmon_invert">#057F8D</color>
 </resources>

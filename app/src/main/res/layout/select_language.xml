@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -25,9 +26,36 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:padding="10dp">
 
        <!--Select Lang-->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/black"
+                android:text="Language" />
+
+            <Spinner
+                android:id="@+id/select_lang_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:entries="@array/languages"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/customtext"/>
+
+
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="OK"
+        android:textStyle="bold"
+        android:background="@android:color/transparent"
+        android:textColor="@color/salmon"/>
 </LinearLayout>

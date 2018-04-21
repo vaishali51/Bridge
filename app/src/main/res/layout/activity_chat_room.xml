@@ -11,6 +11,8 @@
         android:id="@+id/fab"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:backgroundTint="@color/salmon"
+        android:src="@drawable/ic_send_black_24dp"
         app:fabSize="mini"/>
 
         <EditText
@@ -19,6 +21,7 @@
             android:hint="Enter your message"
             android:layout_alignParentBottom="true"
             android:layout_toLeftOf="@+id/fab"
+            android:textColorHighlight="@color/salmon"
             android:id="@+id/input"/>
 
     <ListView
