@@ -1,9 +1,14 @@
 package com.example.ramesh.chatapplication;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,11 +36,16 @@ import java.util.List;
 public class ChatRoom extends AppCompatActivity {
 
     private FirebaseListAdapter<ChatMessage> adapter;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("language", "English");
+        editor.apply();
 
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             //start sign in/sign up activity
@@ -58,9 +68,11 @@ public class ChatRoom extends AppCompatActivity {
                 EditText message = (EditText) findViewById(R.id.input);
                 //Read the input field and push the new Instance
                 //of chat message to Firebase Database
+                ChatMessage chatMessage = new ChatMessage(message.getText().toString(),
+                        FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                chatMessage.setLanguage(sharedPreferences.getString("language", "English"));
                 FirebaseDatabase.getInstance().getReference()
-                        .push().setValue(new ChatMessage(message.getText().toString(),
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail()));
+                        .push().setValue(chatMessage);
                 //clear the input
                 message.setText("");
             }
@@ -122,6 +134,11 @@ public class ChatRoom extends AppCompatActivity {
                             finish();
                         }
                     });
+        }
+        else if (item.getItemId() == R.id.select_language) {
+            SelectLanguage cdd = new SelectLanguage(ChatRoom.this);
+            cdd.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            cdd.show();
         }
         return true;
     }

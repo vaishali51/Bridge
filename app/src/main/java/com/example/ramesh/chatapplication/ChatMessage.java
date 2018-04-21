@@ -8,6 +8,7 @@ public class ChatMessage {
 
     private String messageText, messageUser;
     private String messageTime;
+    private String language;
 
     public ChatMessage(String messageText, String messageUser) {
         this.messageText = messageText;
@@ -42,5 +43,13 @@ public class ChatMessage {
 
     public void setMessageTime(String messageTime) {
         this.messageTime = messageTime;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }
