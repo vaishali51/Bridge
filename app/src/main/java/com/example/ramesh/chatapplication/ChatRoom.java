@@ -90,7 +90,7 @@ public class ChatRoom extends AppCompatActivity {
                 //Read the input field and push the new Instance
                 //of chat message to Firebase Database
                 ChatMessage chatMessage = new ChatMessage(message.getText().toString(),
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail());
+                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 chatMessage.setLanguage(sharedPreferences.getString("language", "English"));
                 FirebaseDatabase.getInstance().getReference()
                         .push().setValue(chatMessage);
@@ -112,8 +112,9 @@ public class ChatRoom extends AppCompatActivity {
                 TextView messageTime = (TextView) v.findViewById(R.id.message_time);
                 TextView messageUser = (TextView) v.findViewById(R.id.message_user);
 
-                String email = model.getMessageUser();
-                if (!(FirebaseAuth.getInstance().getCurrentUser() != null && FirebaseAuth.getInstance().getCurrentUser().getEmail().toString().equals(email))) {
+                String name = model.getMessageUser();
+                String currentName=  (FirebaseAuth.getInstance().getCurrentUser().getDisplayName())!= null?FirebaseAuth.getInstance().getCurrentUser().getDisplayName():"";
+                if (!(FirebaseAuth.getInstance().getCurrentUser() != null && currentName.equals(name))) {
                     chtbx.setBackground(getResources().getDrawable(R.drawable.chtbox_2));
                     chtbx.setGravity(Gravity.END);
                 } else {

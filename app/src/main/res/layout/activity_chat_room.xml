@@ -11,6 +11,9 @@
         android:id="@+id/fab"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:elevation="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
         android:backgroundTint="@color/salmon"
         android:src="@drawable/ic_send_black_24dp"
         app:fabSize="mini"/>
@@ -20,8 +23,9 @@
             android:layout_height="wrap_content"
             android:hint="Enter your message"
             android:layout_alignParentBottom="true"
+            android:backgroundTint="@color/salmon"
+            android:textCursorDrawable="@drawable/mycursor"
             android:layout_toLeftOf="@+id/fab"
-            android:textColorHighlight="@color/salmon"
             android:id="@+id/input"/>
 
     <ListView

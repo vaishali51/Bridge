@@ -1,50 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.ramesh.chatapplication.MainActivity">
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Translate"
+        android:layout_marginTop="20dp"
+        android:textSize="25sp"
+        android:gravity="center_horizontal"/>
+    <RelativeLayout
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:id="@+id/voice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:onClick="getSpeechInput"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_mic_black_24dp" />
+        <EditText
+            android:id="@+id/InputText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/voice"
+            android:textCursorDrawable="@drawable/mycursor2"
+            android:backgroundTint="@color/salmon_invert"
+            android:layout_marginTop="10dp"
+            android:hint="Enter text to be translated"/>
 
+    </RelativeLayout>
+    <Spinner
+        android:id="@+id/Target"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:minHeight="40dp"
+        android:entries="@array/languages"/>
     <Button
-        android:id="@+id/button2"
-        android:layout_width="237dp"
+        android:id="@+id/TranslateButton"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/button_menu"
-        android:text="Submit"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.792" />
-
-    <EditText
-        android:id="@+id/email"
+        android:background="@drawable/chat_box"
+        android:textColor="@android:color/white"
+        android:text="Translate"
+        android:elevation="7dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"/>
+    <TextView
+        android:id="@+id/OutputText"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:minHeight="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:hint="Translated string will appear here."
+        android:gravity="center_horizontal"
+        android:textSize="25dp"/>
+    <ImageView
+        android:id="@+id/listen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Enter your email"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        app:layout_constraintHorizontal_bias="0.502"
-        app:layout_constraintVertical_bias="0.292" />
-
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="Enter your password"
-        android:inputType="textPassword"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.502" />
-
-
-</android.support.constraint.ConstraintLayout>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="132dp"
+        android:onClick="getspeakInput"
+        app:srcCompat="@drawable/ic_volume_up_black_64dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"/>
+</LinearLayout>

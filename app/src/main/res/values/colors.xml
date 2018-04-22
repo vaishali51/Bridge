@@ -2,10 +2,11 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#057F8D</color>
 
     <color name="orange_500">#FF9800</color>
     <color name="salmon">#FA8072</color>
+    <color name="salmon_dark">#ff6959</color>
     <color name="red">#FF0000</color>
     <color name="salmon_invert">#057F8D</color>
 </resources>
