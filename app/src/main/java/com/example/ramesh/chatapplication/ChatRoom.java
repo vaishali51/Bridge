@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Message;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
@@ -45,8 +47,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
@@ -195,6 +199,19 @@ public class ChatRoom extends AppCompatActivity {
         list.setAdapter(adapter);
     }
 
+    //voice to text
+    public void getSpeechInput2(View view) {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, 11);
+        } else {
+            Toast.makeText(this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -212,10 +229,20 @@ public class ChatRoom extends AppCompatActivity {
                         .build(), 10
                 );
             }
+
         }
         if(requestCode==2){
             Log.d("Vaishali", "onActivityResult: request code 2");
             displayChatMessages();
+        }
+        EditText message = (EditText) findViewById(R.id.input);
+
+        if (requestCode == 11) {
+                if (resultCode == RESULT_OK && data != null) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    message.setText(result.get(0));
+                }
+
         }
     }
 
@@ -257,6 +284,7 @@ public class ChatRoom extends AppCompatActivity {
         }
         return true;
     }
+
 
     public static String findLangCode(String lang){
         String langShort = "en";
@@ -479,3 +507,4 @@ public class ChatRoom extends AppCompatActivity {
     }
 
 }
+
