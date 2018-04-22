@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Chat Application</string>
+    <string name="app_name">Bridge</string>
 
     <string-array name="languages">
         <item>-Select-</item>
