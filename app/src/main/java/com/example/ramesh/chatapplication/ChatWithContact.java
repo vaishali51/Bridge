@@ -1,19 +1,13 @@
 package com.example.ramesh.chatapplication;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
-import android.os.Message;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -27,41 +21,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.FirebaseDatabase;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.database.FirebaseListAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.StringTokenizer;
 
 import static android.content.Context.MODE_PRIVATE;
 
+public class ChatWithContact extends AppCompatActivity {
 
-/**
- * Created by hp on 6/26/2017.
- */
-
-public class ChatRoom extends AppCompatActivity {
-
+    String currentUserName;
     private FirebaseListAdapter<ChatMessage> adapter;
     SharedPreferences sharedPreferences;
     public RelativeLayout chtbx;
@@ -71,21 +58,12 @@ public class ChatRoom extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
-        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        getSupportActionBar().setTitle(getIntent().getStringExtra("name"));
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            //start sign in/sign up activity
-            startActivityForResult(AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setLogo(R.mipmap.logo)
-                    .setTheme(R.style.LoginTheme)
-                    .build(), 10
-            );
-        } else {
-            //User is already signed in
-            Toast.makeText(ChatRoom.this, "Welcome " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
-            displayChatMessages();
-        }
+        populateCurrentUser();
+
+        sharedPreferences = getSharedPreferences("MyPrefs", MODE_PRIVATE);
+        displayChatMessages();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -95,20 +73,41 @@ public class ChatRoom extends AppCompatActivity {
                 //Read the input field and push the new Instance
                 //of chat message to Firebase Database
                 ChatMessage chatMessage = new ChatMessage(message.getText().toString(),
-                        FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                        currentUserName);
                 chatMessage.setLanguage(sharedPreferences.getString("language", "English"));
-                FirebaseDatabase.getInstance().getReference()
-                        .push().setValue(chatMessage);
+                FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Chats").child(getIntent().getStringExtra("currentUserId")).push().setValue(chatMessage);
+                FirebaseDatabase.getInstance().getReference().child("Users").child(getIntent().getStringExtra("currentUserId")).child("Chats").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).push().setValue(chatMessage);
+
                 //clear the input
                 message.setText("");
+            }
+        });
+
+    }
+
+    private void populateCurrentUser() {
+        DatabaseReference db = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        db.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String name = dataSnapshot.child("Name").getValue(String.class);
+
+                currentUserName = name;
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }
 
     private void displayChatMessages() {
+
         ListView list = (ListView) findViewById(R.id.list_of_messages);
-        adapter = new FirebaseListAdapter<ChatMessage>(ChatRoom.this, ChatMessage.class,
-                R.layout.message, FirebaseDatabase.getInstance().getReference()) {
+        adapter = new FirebaseListAdapter<ChatMessage>(ChatWithContact.this, ChatMessage.class,
+                R.layout.message, FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Chats").child(getIntent().getStringExtra("currentUserId"))) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 //Get references to the view of message
@@ -118,8 +117,8 @@ public class ChatRoom extends AppCompatActivity {
                 TextView messageUser = (TextView) v.findViewById(R.id.message_user);
 
                 String name = model.getMessageUser();
-                String currentName=  (FirebaseAuth.getInstance().getCurrentUser().getDisplayName())!= null?FirebaseAuth.getInstance().getCurrentUser().getDisplayName():"";
-                if (!(FirebaseAuth.getInstance().getCurrentUser() != null && currentName.equals(name))) {
+                //String currentName=  (FirebaseAuth.getInstance().getCurrentUser().getDisplayName())!= null?FirebaseAuth.getInstance().getCurrentUser().getDisplayName():"";
+                if (!(FirebaseAuth.getInstance().getCurrentUser() != null && currentUserName.equals(name))) {
                     chtbx.setBackground(getResources().getDrawable(R.drawable.chtbox_2));
                     chtbx.setGravity(Gravity.END);
                 } else {
@@ -159,41 +158,41 @@ public class ChatRoom extends AppCompatActivity {
                 }
 
                 else{
-                StringRequest stringRequest = new StringRequest(Request.Method.GET, stringUrl,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
+                    StringRequest stringRequest = new StringRequest(Request.Method.GET, stringUrl,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
 
-                                try {
-                                    String OutputString;
-                                    //getting the whole json object from the response
-                                    JSONObject obj = new JSONObject(response);
-                                    JSONArray arr = obj.getJSONArray("text");
-                                    OutputString = arr.getString(0);
-                                    messageText.setText(OutputString);
+                                    try {
+                                        String OutputString;
+                                        //getting the whole json object from the response
+                                        JSONObject obj = new JSONObject(response);
+                                        JSONArray arr = obj.getJSONArray("text");
+                                        OutputString = arr.getString(0);
+                                        messageText.setText(OutputString);
 
 
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                //displaying the error in toast if occurs
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    //displaying the error in toast if occurs
 
-                                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
 
-                                //TextView error= findViewById(R.id.error);
-                                //error.setText(e.getMessage());
-                            }
-                        });
-                //creating a request queue
-                RequestQueue requestQueue = Volley.newRequestQueue(ChatRoom.this);
-                //adding the string request to request queue
-                requestQueue.add(stringRequest);
-            }
+                                    //TextView error= findViewById(R.id.error);
+                                    //error.setText(e.getMessage());
+                                }
+                            });
+                    //creating a request queue
+                    RequestQueue requestQueue = Volley.newRequestQueue(ChatWithContact.this);
+                    //adding the string request to request queue
+                    requestQueue.add(stringRequest);
+                }
 
             }
         };
@@ -213,15 +212,16 @@ public class ChatRoom extends AppCompatActivity {
             Toast.makeText(this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
         }
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
-                Toast.makeText(ChatRoom.this, "Welcome! " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChatWithContact.this, "Welcome! " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
                 displayChatMessages();
             } else {
-                Toast.makeText(ChatRoom.this, "We couldn't sign you in..", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChatWithContact.this, "We couldn't sign you in..", Toast.LENGTH_SHORT).show();
                 //finish();
                 startActivityForResult(AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -232,17 +232,17 @@ public class ChatRoom extends AppCompatActivity {
             }
 
         }
-        if(requestCode==2){
+        if (requestCode == 2) {
             Log.d("Vaishali", "onActivityResult: request code 2");
             displayChatMessages();
         }
         EditText message = (EditText) findViewById(R.id.input);
 
         if (requestCode == 11) {
-                if (resultCode == RESULT_OK && data != null) {
-                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    message.setText(result.get(0));
-                }
+            if (resultCode == RESULT_OK && data != null) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                message.setText(result.get(0));
+            }
 
         }
     }
@@ -255,9 +255,9 @@ public class ChatRoom extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_sign_out) {
+        /*if (item.getItemId() == R.id.menu_sign_out) {
             FirebaseAuth auth = FirebaseAuth.getInstance();
-            auth.signOut();
+            auth.signOut();*/
 
             /*AuthUI.getInstance().signOut(ChatRoom.this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -273,9 +273,9 @@ public class ChatRoom extends AppCompatActivity {
                             );
                         }
                     });*/
-        }
-        else if (item.getItemId() == R.id.select_language) {
-            SelectLanguage cdd = new SelectLanguage(ChatRoom.this);
+        //}
+         if (item.getItemId() == R.id.select_language) {
+            SelectLanguage cdd = new SelectLanguage(ChatWithContact.this);
             cdd.show();
             Window window = cdd.getWindow();
             window.setLayout(WindowManager.LayoutParams.FILL_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
@@ -509,6 +509,4 @@ public class ChatRoom extends AppCompatActivity {
 
         return langShort;
     }
-
 }
-
